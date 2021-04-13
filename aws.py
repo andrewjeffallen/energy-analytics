@@ -46,3 +46,29 @@ def get_secret(secret_name):
             secret = base64.b64decode(get_secret_value_response["SecretBinary"])
 
     return json.loads(secret)
+
+
+def list_new_s3_objects(bucket, prefix, s3_client, **context):
+    """
+    Creates a list of files that in an S3 prefix
+    Parameters:
+        prefix (string): the prefix for the file path in the s3 bucket for that object
+    """
+    kwargs = {"Prefix": prefix}
+    while True:
+        response = s3_client.list_objects_v2(Bucket=bucket, **kwargs)
+        if response["KeyCount"] == 0:
+            logger.info(f"""no files in folder {prefix}""")
+            break
+        for con in response["Contents"]:
+            file = con["Key"]
+            date = con["LastModified"].replace(tzinfo=tzutc())
+            size = con["Size"]
+            if file.startswith(prefix):
+                # TODO: update to limit search to pattern
+                if size > 0:
+                    yield file
+        try:
+            kwargs["ContinuationToken"] = response["NextContinuationToken"]
+        except KeyError:
+            break
