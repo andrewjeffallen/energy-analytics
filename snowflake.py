@@ -1,11 +1,20 @@
-con = snowflake.connector.connect(
-                user=USER,
-                password=PASSWORD,
-                account=ACCOUNT,
-                warehouse=WAREHOUSE,
-                database=DATABASE,
-                schema=SCHEMA
+from snowflake import connector
+import boto3
+from aws import get_secret, get_aws_session
+
+def snowflake_connection():
+  
+  snowflake_credentials = get_secret("night-dog-snowflake")
+
+  con = snowflake.connector.connect(
+                user=AJALLEN,
+                password=snowflake_credentials.get("password"),
+                account=BKA04153,
+                warehouse=UTIL_WH,
+                database=UTIL_DB,
+                schema=UTIL_SCHEMA
                 )
+  return con
 
 
 with con.cursor() as cur:
