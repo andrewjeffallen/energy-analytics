@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 
 
+INSERTTOKENHERE=' your utiltiy-api token'
+
 def get_authorization_list():
     authorization_list = []
     url ='https://utilityapi.com/api/v2/authorizations'
