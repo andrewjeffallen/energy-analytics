@@ -2,17 +2,17 @@ from snowflake import connector
 import boto3
 from aws import get_secret, get_aws_session
 
-def snowflake_connection():
+def snowflake_connection(secret_name):
   
-  snowflake_credentials = get_secret("night-dog-snowflake")
+  snowflake_credentials = get_secret(f"{secret_name}")
 
   con = snowflake.connector.connect(
-                user=AJALLEN,
+                user=sf_user,
                 password=snowflake_credentials.get("password"),
-                account=BKA04153,
-                warehouse=UTIL_WH,
-                database=UTIL_DB,
-                schema=UTIL_SCHEMA
+                account=snowflake_credentials.get("account"),
+                warehouse=snowflake_credentials.get("wh"),
+                database=snowflake_credentials.get("sfdb"),
+                schema=snowflake_credentials.get("schema")
                 )
   return con
 
