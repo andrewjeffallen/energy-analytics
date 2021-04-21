@@ -1,3 +1,3 @@
 # utilityapi
 
-NightDog Energy Management code repository
+Run analytics pipeline for Utility-API ![https://utilityapi.com/] data on AWS + Snowflake
