@@ -10,7 +10,7 @@ def get_authorization_list():
     url ='https://utilityapi.com/api/v2/authorizations'
     print(url)
     headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Authorization': 'Bearer INSERTTOKENHERE',
         'Content-Type': 'application/json'
     }
     r = requests.get(url, headers=headers)
@@ -26,7 +26,7 @@ def get_authorization_list():
 def get_meter_info_from_authorization(authorization_uid):
     url = f'https://utilityapi.com/api/v2/meters?authorizations={authorization_uid}'
     headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Authorization': 'Bearer INSERTTOKENHERE',
         'Content-Type': 'application/json'
     }
     r = requests.get(url, headers=headers)
@@ -48,7 +48,7 @@ def get_intervals(meter_uid):
     url = f'https://utilityapi.com/api/v2/intervals?meters={meter_uid}'
     print(url)
     headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Authorization': 'Bearer INSERTTOKENHERE',
         'Content-Type': 'application/json'
     }
     r = requests.get(url, headers=headers)
