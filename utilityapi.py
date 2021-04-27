@@ -112,8 +112,14 @@ meter_list = [
     725801
 ]
 
-def main():
-    for uid in meter_list:
-        send_intervals_to_s3(uid)
+if __name__ == "__main__":
+
+    meter_uid = sys.argv[1]
+    return_code = send_intervals_to_s3(meter_uid)
+
+    if return_code == 0:
+        sys.exit(0)
+    else:
+        raise SystemError(f"Error {return_code}")
         
 
