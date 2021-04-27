@@ -72,7 +72,18 @@ def send_intervals_to_s3(meter_uid):
     json_dict =get_intervals(meter_uid=meter_uid)['intervals']
 
 
-    flattened_df= pd.concat([pd.DataFrame(json_dict), pd.DataFrame(list(json_dict[0]['readings']))], axis=1).drop('readings', 1)
+    flattened_df= pd.concat(
+        [pd.DataFrame(
+            json_dict
+        ), 
+         pd.DataFrame(
+             list(
+                 json_dict[0]['readings']
+             )
+         )
+        ],
+        axis=1) \
+            .drop('readings', 1)
 
     intervals = flattened_df[['start','end','kwh']]
     intervals.loc[:,'meter_uid'] = flattened_df['meter_uid'][1]
