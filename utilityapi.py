@@ -105,12 +105,7 @@ def send_intervals_to_s3(meter_uid):
         print(e)
     return return_code
 
-meter_list = [ 
-    725797, 
-    725798, 
-    725799,
-    725801
-]
+meter_list = [ 725797, 725798, 725799, 725801]
 
 if __name__ == "__main__":
 
