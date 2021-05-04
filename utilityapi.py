@@ -60,13 +60,6 @@ def get_meter_info_from_authorization(authorization_uid):
     return json.loads(r.text)
 
 
-
-def get_meter_list_from_auth(authorization_uid, **context):
-    meter_list=[]
-    for i in range(-1,len(get_meter_info_from_authorization(authorization_uid)['meters'])):
-        meter_list.append(get_meter_info_from_authorization(authorization_uid)['meters'][i]['uid'])
-        print(get_meter_info_from_authorization(authorization_uid)['meters'][i]['uid'])
-    return pd.DataFrame(meter_list)
             
             
 #Collect past intervals from the meter
@@ -78,6 +71,32 @@ def get_intervals(meter_uid):
     }
     r = requests.get(url, headers=headers)
     return json.loads(r.text)
+
+def get_active_meters():
+    url = 'https://utilityapi.com/api/v2/meters'
+    headers = {
+        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Content-Type': 'application/json'
+    }
+    r = requests.get(url, headers=headers)
+    download = json.loads(r.text)
+    
+    active_meters=[]
+    
+    for i in range(len(download['meters'])):
+        if download['meters'][i]['is_activated']==True:
+            active_meters.append(download['meters'][i]['uid'])
+    return active_meters
+
+
+def get_intervals(meter_uid):
+    url = f'https://utilityapi.com/api/v2/files/intervals_csv?meters={meter_uid}'
+    headers = {
+        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Content-Type': 'application/json'
+    }
+    download = requests.get(url, headers=headers).content
+    return pd.read_csv(io.StringIO(download.decode('utf-8')), error_bad_lines=False)
 
 
 def send_intervals_to_s3(meter_uid):
@@ -130,16 +149,41 @@ def send_intervals_to_s3(meter_uid):
         print(e)
     return return_code
 
-meter_list = [ 725797, 725798, 725799, 725801]
+def get_bills(meter_uid):
+    url =f'https://utilityapi.com/api/v2/files/meters_bills_csv?meters={meter_uid}'
+    headers = {
+        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Content-Type': 'application/json'
+    }
+    download = requests.get(url, headers=headers).content
+    return pd.read_csv(io.StringIO(download.decode('utf-8')), error_bad_lines=False)
 
-if __name__ == "__main__":
 
-    meter_uid = sys.argv[1]
-    return_code = send_intervals_to_s3(meter_uid)
+def send_bills_to_s3(meter_uid):
+    df=get_bills(meter_uid)
+    
+    print(f'Loading {len(df)} Rows to S3 for meter_uid {meter_uid}')
+    
+    load_date = date.today().strftime("%Y-%m-%d")
+    print("Load Date:", load_date)
+    
+    session = boto3.session.Session(profile_name="data-arch", )
+    s3_client = session.client("s3", use_ssl=False)    
 
-    if return_code == 0:
-        sys.exit(0)
-    else:
-        raise SystemError(f"Error {return_code}")
-        
+    csv_buffer = io.StringIO()
+    
+    df.to_csv(csv_buffer, index=False)
+    csv_buffer.seek(0)
+    gz_buffer = io.BytesIO()
+    
+
+    with gzip.GzipFile(mode='w', fileobj=gz_buffer) as gz_file:
+        gz_file.write(bytes(csv_buffer.getvalue(), 'utf-8'))
+    try:
+        s3_client.put_object(Bucket='utility-api', Key=f"""bills/{meter_uid}/{load_date}.csv.gz""", Body=gz_buffer.getvalue())
+        return_code = 0
+    except Exception as e:
+        return_code = 1
+        print(e)
+    return return_code
 
