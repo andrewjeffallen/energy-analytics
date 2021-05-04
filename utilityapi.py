@@ -19,6 +19,20 @@ import sys
 
 from datetime import date
 
+
+import json, requests, urllib, io
+
+## Works for Valid METER_UID to grab entire meter intervals history:
+def get_intervals(meter_uid):
+    url = f'https://utilityapi.com/api/v2/files/intervals_csv?meters={meter_uid}'
+    headers = {
+        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Content-Type': 'application/json'
+    }
+    download = requests.get(url, headers=headers).content
+    return pd.read_csv(io.StringIO(download.decode('utf-8')), error_bad_lines=False)
+
+
 def get_authorization_list():
     authorization_list = []
     url ='https://utilityapi.com/api/v2/authorizations'
