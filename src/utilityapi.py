@@ -187,3 +187,24 @@ def send_bills_to_s3(meter_uid):
         print(e)
     return return_code
 
+
+def main(meter_file):
+    
+    meter_uid=sys.argv[1]
+    
+    if meter_file = 'bills':
+        return_code=send_bills_to_s3(meter_uid)
+        if return_code == 0:
+            sys.exit(0)
+        else:
+            raise SystemError(f"Error {return_code}")
+    elif meter_file = 'intervals':
+        return_code=send_intervals_to_s3(meter_uid)
+        if return_code == 0:
+            sys.exit(0)
+        else:
+            raise SystemError(f"Error {return_code}")
+    
+    
+    
+    
