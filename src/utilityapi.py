@@ -16,61 +16,9 @@ import io
 import gzip
 from geopy.geocoders import Nominatim
 import sys
-
 from datetime import date
-
-
 import json, requests, urllib, io
 
-## Works for Valid METER_UID to grab entire meter intervals history:
-def get_intervals(meter_uid):
-    url = f'https://utilityapi.com/api/v2/files/intervals_csv?meters={meter_uid}'
-    headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
-        'Content-Type': 'application/json'
-    }
-    download = requests.get(url, headers=headers).content
-    return pd.read_csv(io.StringIO(download.decode('utf-8')), error_bad_lines=False)
-
-
-def get_authorization_list():
-    authorization_list = []
-    url ='https://utilityapi.com/api/v2/authorizations'
-    headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
-        'Content-Type': 'application/json'
-    }
-    r = requests.get(url, headers=headers)
-    json.loads(r.text)['authorizations']
-    
-    for i in range(-1,len(json.loads(r.text)['authorizations'])-1):
-        authorization_list.append(json.loads(r.text)['authorizations'][i]['uid'])
-
-    return authorization_list
-
-
-
-def get_meter_info_from_authorization(authorization_uid):
-    url = f'https://utilityapi.com/api/v2/meters?authorizations={authorization_uid}'
-    headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
-        'Content-Type': 'application/json'
-    }
-    r = requests.get(url, headers=headers)
-    return json.loads(r.text)
-
-
-            
-            
-#Collect past intervals from the meter
-def get_intervals(meter_uid):
-    url = f'https://utilityapi.com/api/v2/intervals?meters={meter_uid}'
-    headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
-        'Content-Type': 'application/json'
-    }
-    r = requests.get(url, headers=headers)
-    return json.loads(r.text)
 
 def get_active_meters():
     url = 'https://utilityapi.com/api/v2/meters'
@@ -88,7 +36,7 @@ def get_active_meters():
             active_meters.append(download['meters'][i]['uid'])
     return active_meters
 
-
+# INTERVALS
 def get_intervals(meter_uid):
     url = f'https://utilityapi.com/api/v2/files/intervals_csv?meters={meter_uid}'
     headers = {
@@ -98,36 +46,13 @@ def get_intervals(meter_uid):
     download = requests.get(url, headers=headers).content
     return pd.read_csv(io.StringIO(download.decode('utf-8')), error_bad_lines=False)
 
-
 def send_intervals_to_s3(meter_uid):
+    df=get_intervals(meter_uid)
     
-    raw_int=get_intervals(meter_uid=meter_uid)
-    json_dict =get_intervals(meter_uid=meter_uid)['intervals']
-
-
-    flattened_df= pd.concat(
-        [pd.DataFrame(
-            json_dict
-        ), 
-         pd.DataFrame(
-             list(
-                 json_dict[0]['readings']
-             )
-         )
-        ],
-        axis=1) \
-            .drop('readings', 1)
-
-    intervals = flattened_df[['start','end','kwh']]
-    intervals.loc[:,'meter_uid'] = flattened_df['meter_uid'][1]
-    intervals.loc[:,'authorization_uid'] = flattened_df['authorization_uid'][1]
-    intervals.loc[:,'utility'] = flattened_df['utility'][1]
-    intervals.loc[:,'service_address'] = list(flattened_df['base'])[0]['service_address']
-    
-    df = intervals
     print(f'Loading {len(df)} Rows to S3 for meter_uid {meter_uid}')
     
     load_date = date.today().strftime("%Y-%m-%d")
+    print("Load Date:", load_date)
     
     session = boto3.session.Session(profile_name="data-arch", )
     s3_client = session.client("s3", use_ssl=False)    
@@ -149,6 +74,7 @@ def send_intervals_to_s3(meter_uid):
         print(e)
     return return_code
 
+# BILLS
 def get_bills(meter_uid):
     url =f'https://utilityapi.com/api/v2/files/meters_bills_csv?meters={meter_uid}'
     headers = {
