@@ -8,7 +8,7 @@ Run analytics pipeline for [Utility-API](https://utilityapi.com/) data on AWS + 
 
 Connects to UtilityAPI endpoints, load json into gunzipped csv, loads to AWS S3 for object storage
 
-### `snowflake.py`
+### `snowflake`
 
 Performs COPY INTO from S3 into Snowflake Database
 
