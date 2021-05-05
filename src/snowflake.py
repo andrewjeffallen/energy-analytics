@@ -17,9 +17,7 @@ def snowflake_connection(secret_name):
   return con
 
 def load_snowflake(secret_name,table_name):
-  
   con=snowflake(secret_name)
-  
   with con.cursor() as cur:
       cur.execute(f"""COPY INTO STAGE.{table_name} 
                   FROM (
@@ -37,4 +35,5 @@ def load_snowflake(secret_name,table_name):
                       VALIDATE_UTF8 = False
                       )
 
-  Pattern = '.*.csv'; """)
+                      Pattern = '.*.csv'; """)
+      
