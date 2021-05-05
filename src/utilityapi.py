@@ -188,9 +188,9 @@ def send_bills_to_s3(meter_uid):
     return return_code
 
 
-def main(meter_file):
-    
+def main():
     meter_uid=sys.argv[1]
+    meter_file=sys.argv[2]
     
     if meter_file = 'bills':
         return_code=send_bills_to_s3(meter_uid)
@@ -204,6 +204,10 @@ def main(meter_file):
             sys.exit(0)
         else:
             raise SystemError(f"Error {return_code}")
+            
+            
+#example command:   /bin/python3 utilityapi.py '678003' 'intervals' 
+# sends intervals data to S3 for meter_uid 678003
     
     
     
