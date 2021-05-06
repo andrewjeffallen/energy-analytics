@@ -20,10 +20,11 @@ from datetime import date
 import json, requests, urllib, io
 
 
+
 def get_active_meters():
     url = 'https://utilityapi.com/api/v2/meters'
     headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
     }
     r = requests.get(url, headers=headers)
@@ -40,7 +41,7 @@ def get_active_meters():
 def get_intervals(meter_uid):
     url = f'https://utilityapi.com/api/v2/files/intervals_csv?meters={meter_uid}'
     headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
     }
     download = requests.get(url, headers=headers).content
@@ -78,7 +79,7 @@ def send_intervals_to_s3(meter_uid):
 def get_bills(meter_uid):
     url =f'https://utilityapi.com/api/v2/files/meters_bills_csv?meters={meter_uid}'
     headers = {
-        'Authorization': 'Bearer 2793bc2c7aeb4013bf817f656213e056',
+        'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
     }
     download = requests.get(url, headers=headers).content
