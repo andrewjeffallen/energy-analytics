@@ -21,7 +21,7 @@ import json, requests, urllib, io
 
 
 
-def get_active_meters():
+def get_active_meters(token):
     url = 'https://utilityapi.com/api/v2/meters'
     headers = {
         'Authorization': f'Bearer {token}',
@@ -38,7 +38,7 @@ def get_active_meters():
     return active_meters
 
 # INTERVALS
-def get_intervals(meter_uid):
+def get_intervals(meter_uid,token):
     url = f'https://utilityapi.com/api/v2/files/intervals_csv?meters={meter_uid}'
     headers = {
         'Authorization': f'Bearer {token}',
@@ -47,8 +47,8 @@ def get_intervals(meter_uid):
     download = requests.get(url, headers=headers).content
     return pd.read_csv(io.StringIO(download.decode('utf-8')), error_bad_lines=False)
 
-def send_intervals_to_s3(meter_uid):
-    df=get_intervals(meter_uid)
+def send_intervals_to_s3(meter_uid,token):
+    df=get_intervals(meter_uid,token)
     
     print(f'Loading {len(df)} Rows to S3 for meter_uid {meter_uid}')
     
@@ -76,7 +76,7 @@ def send_intervals_to_s3(meter_uid):
     return return_code
 
 # BILLS
-def get_bills(meter_uid):
+def get_bills(meter_uid,token):
     url =f'https://utilityapi.com/api/v2/files/meters_bills_csv?meters={meter_uid}'
     headers = {
         'Authorization': f'Bearer {token}',
@@ -86,8 +86,8 @@ def get_bills(meter_uid):
     return pd.read_csv(io.StringIO(download.decode('utf-8')), error_bad_lines=False)
 
 
-def send_bills_to_s3(meter_uid):
-    df=get_bills(meter_uid)
+def send_bills_to_s3(meter_uid,token):
+    df=get_bills(meter_uid,token)
     
     print(f'Loading {len(df)} Rows to S3 for meter_uid {meter_uid}')
     
@@ -115,7 +115,7 @@ def send_bills_to_s3(meter_uid):
     return return_code
 
 
-def main():
+def main(token):
     meter_uid=sys.argv[1]
     meter_file=sys.argv[2]
     
