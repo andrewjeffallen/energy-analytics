@@ -115,26 +115,25 @@ def send_bills_to_s3(meter_uid,token):
     return return_code
 
 
-def main(token):
+def main():
     meter_uid=sys.argv[1]
     meter_file=sys.argv[2]
+    token=sys.argv[3]
     
     if meter_file = 'bills':
-        return_code=send_bills_to_s3(meter_uid)
+        return_code=send_bills_to_s3(meter_uid,token)
         if return_code == 0:
             sys.exit(0)
         else:
             raise SystemError(f"Error {return_code}")
     elif meter_file = 'intervals':
-        return_code=send_intervals_to_s3(meter_uid)
+        return_code=send_intervals_to_s3(meter_uid,token)
         if return_code == 0:
             sys.exit(0)
         else:
             raise SystemError(f"Error {return_code}")
             
             
-#example command:   /bin/python3 utilityapi.py '678003' 'intervals' 
-# sends intervals data to S3 for meter_uid 678003
     
     
     
