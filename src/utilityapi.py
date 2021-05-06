@@ -115,7 +115,7 @@ def send_bills_to_s3(meter_uid,token):
     return return_code
 
 
-def main():
+if __name__ == '__main__':
     meter_uid=sys.argv[1]
     meter_file=sys.argv[2]
     token=sys.argv[3]
