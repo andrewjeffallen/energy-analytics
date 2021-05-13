@@ -30,7 +30,7 @@ def get_authorization_list():
     authorization_list = []
     url ='https://utilityapi.com/api/v2/authorizations'
     headers = {
-        'Authorization': 'Bearer {token}',
+        f'Authorization': 'Bearer {token}',
         'Content-Type': 'application/json'
     }
     r = requests.get(url,
@@ -48,7 +48,7 @@ def get_authorization_list():
 def get_active_meters():
     url = 'https://utilityapi.com/api/v2/meters'
     headers = {
-        'Authorization': 'Bearer {token}',
+        f'Authorization': 'Bearer {token}',
         'Content-Type': 'application/json'
     }
     r = requests.get(url, headers=headers)
@@ -67,7 +67,7 @@ def get_active_meters():
 def get_bills(meter_uid):
     url =f'https://utilityapi.com/api/v2/files/meters_bills_csv?meters={meter_uid}'
     headers = {
-        'Authorization': 'Bearer {token}',
+        f'Authorization': 'Bearer {token}',
         'Content-Type': 'application/json'
     }
     download = requests.get(url, headers=headers).content
@@ -111,7 +111,7 @@ def send_bills_to_s3(meter_uid):
 def get_intervals(meter_uid):
     url = f'https://utilityapi.com/api/v2/files/intervals_csv?meters={meter_uid}'
     headers = {
-        'Authorization': 'Bearer {token}',
+        f'Authorization': 'Bearer {token}',
         'Content-Type': 'application/json'
     }
     download = requests.get(url, headers=headers).content
