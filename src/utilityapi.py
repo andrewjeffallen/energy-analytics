@@ -49,6 +49,23 @@ def get_bills(meter_uid):
     return pd.read_csv(io.StringIO(download.decode('utf-8')), error_bad_lines=False)
 
 
+
+# Test whether a meter bill has `Demand_kw` or not and get list of those meters
+def test_demand_kw_in_bills():
+    no_demand_kw=[]
+    all_active = get_active_meters()
+    for i in all_active:
+        try:
+            get_bills(i)['Demand_kw']
+            return_code=0
+        except Exception as e:
+            return_code=1
+#             print(e)
+        if return_code==1:
+            no_demand_kw.append(i)        
+    return no_demand_kw
+
+
 # send bills dataframe to S3
 
 def send_bills_to_s3(meter_uid):
