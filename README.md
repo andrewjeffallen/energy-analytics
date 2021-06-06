@@ -23,6 +23,12 @@ Python 3.9 or higher with the following libraries
 - `boto3`
 - `snowflake-connector-python`
 
+To run install python libraries at once, run this in your terminal:
+
+```
+pip install -r src/requirements.txt 
+```
+
 ## Core Modules
 
 ### `utilityapi`
