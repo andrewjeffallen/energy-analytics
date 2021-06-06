@@ -22,8 +22,7 @@ from src.snowflake import *
 
 def execute_load_s3_and_copy_into_snowflake():
     
-#     return_code_s3 = execute_load_s3()
-    return_code_s3=0
+    return_code_s3 = execute_load_s3()
     if return_code_s3 == 0:
         print("")
         print("Load to S3 Succesful..")
