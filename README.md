@@ -30,10 +30,10 @@ $ brew install git
 
 #### Step 1: Clone Repository
 
-Once you have downloaded Python and Git onto your local machine, clone the `energy-analytics` repository
+Once you have downloaded Python and Git onto your local machine, clone the `energy-analytics` repository. Run this in your terminal
 
 ```
-git clone https://github.com/andrewjeffallen/energy-analytics.git
+$ git clone https://github.com/andrewjeffallen/energy-analytics.git
 ```
 
 #### Step 2: Run data refresh
