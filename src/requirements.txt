@@ -1,0 +1,6 @@
+urllib
+numpy==1.20.2
+pandas==1.2.4
+boto3==1.17.51
+snowflake-connector-python==2.4.3
+botocore==1.20.51
