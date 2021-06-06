@@ -24,14 +24,3 @@ if __name__ == "__main__":
   weather = Weather(locale)
   weather.getWeather()
 
-  
-  
-# from geopy.geocoders import Nominatim
-
-# geolocator = Nominatim(user_agent="utility_api")
-
-# location = geolocator.geocode('3375 MICHELSON DR A, IRVINE, CA 92612')
-# print(location.address)
-# (location.latitude, location.longitude)
-
-# join with Snowflake weather data
