@@ -15,7 +15,7 @@ from datetime import date
 from pandas import json_normalize
 from pandas.io.json import json_normalize
 
-from src.aws import get_secret
+from src.aws import *
 from src.utilityapi import * 
 from src.snowflake import * 
 
