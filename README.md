@@ -8,7 +8,9 @@ Run analytics pipeline for [Utility-API](https://utilityapi.com/) data on AWS + 
 
 From within your `energy-analytics` directory, execute the following from your terminal:
 
-`python3 main.py` 
+```
+$ python3 main.py
+```
 
 ## Prerequisites
 
