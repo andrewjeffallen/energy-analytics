@@ -1,18 +1,14 @@
-def get_aws_session():
-
-    return boto3.session.Session()
+import boto3
+import base64
+from botocore.exceptions import ClientError
 
 def get_secret(secret_name):
 
-    region_name = "aws-region"
+    region_name = "us-east-1"
 
     # Create a Secrets Manager client
-    session = get_aws_session()
+    session = boto3.session.Session(profile_name="data-arch", )
     client = session.client(service_name="secretsmanager", region_name=region_name)
-
-    # In this sample we only handle the specific exceptions for the 'GetSecretValue' API.
-    # See https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-    # We rethrow the exception by default.
 
     try:
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
@@ -46,29 +42,3 @@ def get_secret(secret_name):
             secret = base64.b64decode(get_secret_value_response["SecretBinary"])
 
     return json.loads(secret)
-
-
-def list_new_s3_objects(bucket, prefix, s3_client, **context):
-    """
-    Creates a list of files that in an S3 prefix
-    Parameters:
-        prefix (string): the prefix for the file path in the s3 bucket for that object
-    """
-    kwargs = {"Prefix": prefix}
-    while True:
-        response = s3_client.list_objects_v2(Bucket=bucket, **kwargs)
-        if response["KeyCount"] == 0:
-            logger.info(f"""no files in folder {prefix}""")
-            break
-        for con in response["Contents"]:
-            file = con["Key"]
-            date = con["LastModified"].replace(tzinfo=tzutc())
-            size = con["Size"]
-            if file.startswith(prefix):
-                # TODO: update to limit search to pattern
-                if size > 0:
-                    yield file
-        try:
-            kwargs["ContinuationToken"] = response["NextContinuationToken"]
-        except KeyError:
-            break
