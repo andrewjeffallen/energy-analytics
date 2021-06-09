@@ -21,22 +21,7 @@ To run install python libraries at once, run this in your terminal:
 pip install -r src/requirements.txt 
 ```
 
-2) git
-
-If you are on MacOS, run this in your terminal:
-```
-$ brew install git
-```
-
-#### Step 1: Clone Repository
-
-Once you have downloaded Python and Git onto your local machine, clone the `energy-analytics` repository. Run this in your terminal
-
-```
-$ git clone https://github.com/andrewjeffallen/energy-analytics.git
-```
-
-#### Step 2: Run data refresh
+#### Run data refresh
 
 From within your `energy-analytics` directory, execute the following from your terminal:
 
