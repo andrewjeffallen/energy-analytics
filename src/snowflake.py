@@ -81,6 +81,15 @@ def load_data_to_snowflake(utility_file):
         df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
 
         print(f"Succesfully loaded {utility_file} data into {schema}.{table} with {len(df)} files ")
+        
+        bi_query = f"""create or replace table bi.bills as select *  from {schema}.{table}; """
+        cs.execute(bi_query)
+        bi_validation = "select count(*) from bi.bills"
+        results=cs.execute(bi_validation)
+        rows=cs.fetchall()
+        bi_df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
+        
+        print(f"Succesfully loaded BI.BILLS ")
            
     elif utility_file=='intervals':
         utility_file_length=13
@@ -126,3 +135,22 @@ def load_data_to_snowflake(utility_file):
         df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
 
         print(f"Succesfully loaded {utility_file} data into {schema}.{table} with {len(df)} files ")
+        
+        bi_query = f"""create or replace view bi.intervals as (
+                        select 
+                          to_timestamp(INTERVAL_START, 'MM/DD/YYYY HH24:MI') as start_ts,
+                          to_timestamp(INTERVAL_end,'MM/DD/YYYY HH24:MI') as end_ts,
+                          right(UTILITY_SERVICE_ADDRESS,6) as zip_code,
+                          *
+                        from STAGE.intervals_raw_src 
+                          where utility <> 'DEMO'
+                          order by meter_uid, start_ts asc
+                         );
+                          """
+        
+        cs.execute(bi_query)
+        bi_validation = "select count(*) from bi.intervals"
+        results=cs.execute(bi_validation)
+        rows=cs.fetchall()
+        bi_df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
+        print(f"Succesfully loaded BI.INTERVALS ")
