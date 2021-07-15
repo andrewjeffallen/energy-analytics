@@ -154,3 +154,21 @@ def load_data_to_snowflake(utility_file):
         rows=cs.fetchall()
         bi_df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
         print(f"Succesfully loaded BI.INTERVALS ")
+        
+        
+        
+def query_snowflake(sql):
+    con=snowflake_connection("stage")
+    cs=con.cursor()        
+    
+    query = f"{sql}"
+    
+    results=cs.execute(query)
+    rows=cs.fetchall()
+    df=pd.DataFrame(
+        rows, 
+        columns= [
+            desc[0] for desc in cs.description
+        ]
+    )
+    return df
