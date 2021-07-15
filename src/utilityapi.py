@@ -53,11 +53,10 @@ def test_demand_kw_in_bills(API_TOKEN):
     all_active = get_active_meters(API_TOKEN)
     for i in all_active:
         try:
-            get_bills(i)['Demand_kw']
+            get_bills(API_TOKEN, i)['Demand_kw']
             return_code=0
         except Exception as e:
             return_code=1
-#             print(e)
         if return_code==1:
             no_demand_kw.append(i)        
     return no_demand_kw
@@ -199,20 +198,6 @@ def send_intervals_to_s3(API_TOKEN, meter_uid):
         print(e)
     return return_code
 
-
-def test_demand_kw_in_bills(API_TOKEN):
-    no_demand_kw=[]
-    all_active = get_active_meters(API_TOKEN)
-    for i in all_active:
-        try:
-            get_bills(i)['Demand_kw']
-            return_code=0
-        except Exception as e:
-            return_code=1
-#             print(e)
-        if return_code==1:
-            no_demand_kw.append(i)        
-    return no_demand_kw
     
 
 def load_s3(API_TOKEN):
