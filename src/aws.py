@@ -3,12 +3,15 @@ import base64
 from botocore.exceptions import ClientError
 import json
 
+
 def get_secret(secret_name):
 
     region_name = "us-east-1"
 
     # Create a Secrets Manager client
-    session = boto3.session.Session(profile_name="data-arch", )
+    session = boto3.session.Session(
+        profile_name="data-arch",
+    )
     client = session.client(service_name="secretsmanager", region_name=region_name)
 
     try:

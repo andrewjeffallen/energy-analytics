@@ -17,9 +17,9 @@ from src.aws import *
 
 
 def snowflake_connection(schema):
-    
-    creds = get_secret('utility-database-credentials')
-    
+
+    creds = get_secret("utility-database-credentials")
+
     con = snowflake.connector.connect(
         user=creds.get("user"),
         password=creds.get("password"),
@@ -27,34 +27,33 @@ def snowflake_connection(schema):
         warehouse=creds.get("warehouse"),
         database=creds.get("database"),
         schema=schema,
-        role=creds.get('role')
-        )
+        role=creds.get("role"),
+    )
     return con
 
+
 def load_data_to_snowflake(utility_file):
-    
+
     load_date = date.today().strftime("%Y-%m-%d")
-    schema='STAGE'
-    external_stage='utility_api_stage'
-     
-    if utility_file=='bills':
-        utility_file_length=16
-        table='BILLS_RAW_SRC'
-        
+    schema = "STAGE"
+    external_stage = "utility_api_stage"
+
+    if utility_file == "bills":
+        utility_file_length = 16
+        table = "BILLS_RAW_SRC"
+
         print("")
         print(f"loading {utility_file} data for files ingested on {load_date}")
         print("")
-        con=snowflake_connection(schema)
-        cs=con.cursor()
+        con = snowflake_connection(schema)
+        cs = con.cursor()
         print(f"Truncating {schema}.{table} Prior to Load")
         cs.execute(f"""truncate {schema}.{table};""")
         print(f"Succesfully Truncated {schema}.{table} Prior to load")
         print("")
         print(f"Loading {schema}.{table} ")
 
-
-
-        cols =", ".join([f"${i}" for i in range(1,utility_file_length+1)])
+        cols = ", ".join([f"${i}" for i in range(1, utility_file_length + 1)])
 
         query = f"""COPY INTO {schema}.{table}
                     FROM (
@@ -76,39 +75,41 @@ def load_data_to_snowflake(utility_file):
 
                     """
 
-        results=cs.execute(query)
-        rows=cs.fetchall()
-        df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
+        results = cs.execute(query)
+        rows = cs.fetchall()
+        df = pd.DataFrame(rows, columns=[desc[0] for desc in cs.description])
 
-        print(f"Succesfully loaded {utility_file} data into {schema}.{table} with {len(df)} files ")
-        
-        bi_query = f"""create or replace table bi.bills as select *  from {schema}.{table}; """
+        print(
+            f"Succesfully loaded {utility_file} data into {schema}.{table} with {len(df)} files "
+        )
+
+        bi_query = (
+            f"""create or replace table bi.bills as select *  from {schema}.{table}; """
+        )
         cs.execute(bi_query)
         bi_validation = "select count(*) from bi.bills"
-        results=cs.execute(bi_validation)
-        rows=cs.fetchall()
-        bi_df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
-        
+        results = cs.execute(bi_validation)
+        rows = cs.fetchall()
+        bi_df = pd.DataFrame(rows, columns=[desc[0] for desc in cs.description])
+
         print(f"Succesfully loaded BI.BILLS ")
-           
-    elif utility_file=='intervals':
-        utility_file_length=13
-        table='INTERVALS_RAW_SRC'
-        
+
+    elif utility_file == "intervals":
+        utility_file_length = 13
+        table = "INTERVALS_RAW_SRC"
+
         print("")
         print(f"loading {utility_file} data for files ingested on {load_date}")
         print("")
-        con=snowflake_connection(schema)
-        cs=con.cursor()
+        con = snowflake_connection(schema)
+        cs = con.cursor()
         print(f"Truncating {schema}.{table} Prior to Load")
         cs.execute(f"""truncate {schema}.{table};""")
         print(f"Succesfully Truncated {schema}.{table} Prior to load")
         print("")
         print(f"Loading {schema}.{table} ")
 
-
-
-        cols =", ".join([f"${i}" for i in range(1,utility_file_length+1)])
+        cols = ", ".join([f"${i}" for i in range(1, utility_file_length + 1)])
 
         query = f"""COPY INTO {schema}.{table}
                     FROM (
@@ -130,12 +131,14 @@ def load_data_to_snowflake(utility_file):
 
                     """
 
-        results=cs.execute(query)
-        rows=cs.fetchall()
-        df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
+        results = cs.execute(query)
+        rows = cs.fetchall()
+        df = pd.DataFrame(rows, columns=[desc[0] for desc in cs.description])
 
-        print(f"Succesfully loaded {utility_file} data into {schema}.{table} with {len(df)} files ")
-        
+        print(
+            f"Succesfully loaded {utility_file} data into {schema}.{table} with {len(df)} files "
+        )
+
         bi_query = f"""create or replace view bi.intervals as (
                         select 
                           to_timestamp(INTERVAL_START, 'MM/DD/YYYY HH24:MI') as start_ts,
@@ -147,28 +150,22 @@ def load_data_to_snowflake(utility_file):
                           order by meter_uid, start_ts asc
                          );
                           """
-        
+
         cs.execute(bi_query)
         bi_validation = "select count(*) from bi.intervals"
-        results=cs.execute(bi_validation)
-        rows=cs.fetchall()
-        bi_df=pd.DataFrame(rows, columns= [desc[0] for desc in cs.description])
+        results = cs.execute(bi_validation)
+        rows = cs.fetchall()
+        bi_df = pd.DataFrame(rows, columns=[desc[0] for desc in cs.description])
         print(f"Succesfully loaded BI.INTERVALS ")
-        
-        
-        
+
+
 def query_snowflake(sql):
-    con=snowflake_connection("stage")
-    cs=con.cursor()        
-    
+    con = snowflake_connection("stage")
+    cs = con.cursor()
+
     query = f"{sql}"
-    
-    results=cs.execute(query)
-    rows=cs.fetchall()
-    df=pd.DataFrame(
-        rows, 
-        columns= [
-            desc[0] for desc in cs.description
-        ]
-    )
+
+    results = cs.execute(query)
+    rows = cs.fetchall()
+    df = pd.DataFrame(rows, columns=[desc[0] for desc in cs.description])
     return df
