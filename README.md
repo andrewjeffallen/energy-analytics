@@ -1,4 +1,4 @@
-# NightDog Energy Analytics
+# Energy Analytics Pipeline Tool
 
 Run analytics pipeline for [Utility-API](https://utilityapi.com/) data on AWS + Snowflake for use by energy engineers to analyze in [SkySpark](https://skyfoundry.com/) engine 
 
